@@ -6,3 +6,8 @@
 .DS_Store
 /build
 /captures
+/backend/build
+*.apk
+*.class
+*.jar
+*.iml
