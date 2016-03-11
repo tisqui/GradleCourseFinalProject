@@ -1,6 +1,7 @@
 package com.udacity.gradle.builditbigger;
 
 import android.os.AsyncTask;
+import android.support.annotation.VisibleForTesting;
 
 import com.example.Joke;
 import com.example.squirrel.myapplication.backend.myApi.MyApi;
@@ -12,7 +13,20 @@ import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
 import java.io.IOException;
 
 public class EndpointAsyncTask extends AsyncTask<Void, Void, String> {
+    public static final String LOG_TAG = EndpointAsyncTask.class.getSimpleName();
     private static MyApi myApiService = null;
+
+    private GetJokeListener mListener = null;
+    private Exception mError = null;
+
+    public static interface GetJokeListener {
+        public void onComplete(String jokeString, Exception e);
+    }
+
+    public EndpointAsyncTask setListener(GetJokeListener listener) {
+        this.mListener = listener;
+        return this;
+    }
 
     @Override
     protected String doInBackground(Void... params) {
@@ -39,7 +53,24 @@ public class EndpointAsyncTask extends AsyncTask<Void, Void, String> {
         try {
             return myApiService.sayJoke(joke).execute().getData();
         } catch (IOException e) {
+            mError = e;
             return e.getMessage();
         }
     }
+
+    @Override
+    protected void onCancelled() {
+        if (this.mListener != null) {
+            mError = new InterruptedException("AsyncTask cancelled");
+            this.mListener.onComplete(null, mError);
+        }
+    }
+
+    @VisibleForTesting
+    @Override
+    protected void onPostExecute(String s) {
+        if (this.mListener != null)
+            this.mListener.onComplete(s, mError);
+    }
+
 }
