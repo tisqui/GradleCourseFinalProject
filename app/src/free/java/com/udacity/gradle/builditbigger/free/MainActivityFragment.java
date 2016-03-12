@@ -9,12 +9,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.squirrel.displayjokeslib.ShowJokeActivity;
 import com.udacity.gradle.builditbigger.EndpointAsyncTask;
-import com.udacity.gradle.builditbigger.MainActivity;
 import com.udacity.gradle.builditbigger.R;
 
 
@@ -22,7 +22,7 @@ import com.udacity.gradle.builditbigger.R;
  * A simple {@link Fragment} subclass.
  */
 public class MainActivityFragment extends Fragment {
-
+    private ProgressBar mSpinner;
 
     public MainActivityFragment() {
         // Required empty public constructor
@@ -34,6 +34,11 @@ public class MainActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View root = inflater.inflate(R.layout.fragment_main, container, false);
+
+        mSpinner = (ProgressBar)root.findViewById(R.id.joke_progress_bar);
+        if(mSpinner != null){
+            mSpinner.setVisibility(View.GONE);
+        }
 
         AdView mAdView = (AdView) root.findViewById(R.id.adView);
         // Create an ad request. Check logcat output for the hashed device ID to
@@ -49,12 +54,21 @@ public class MainActivityFragment extends Fragment {
             jokeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
+                    if(mSpinner != null){
+                        mSpinner.setVisibility(View.VISIBLE);
+                    }
+
                     new EndpointAsyncTask(){
                         @Override
                         protected void onPostExecute(String result) {
                             Intent intent = new Intent(getContext(), ShowJokeActivity.class);
                             intent.putExtra(ShowJokeActivity.JOKE_TAG, result);
                             startActivity(intent);
+
+                            if(mSpinner != null){
+                                mSpinner.setVisibility(View.GONE);
+                            }
                         }
                     }.execute();
                 }
