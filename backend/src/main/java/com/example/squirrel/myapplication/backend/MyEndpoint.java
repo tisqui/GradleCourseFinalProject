@@ -6,6 +6,7 @@
 
 package com.example.squirrel.myapplication.backend;
 
+import com.example.Joke;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
@@ -33,7 +34,8 @@ public class MyEndpoint {
     }
     /** endpoint method that takes a joke from the library and sends it */
     @ApiMethod(name = "sayJoke")
-    public MyBean sayJoke(@Named("joke") String joke) {
+    public MyBean sayJoke() {
+        String joke = new Joke().getJoke();
         MyBean response = new MyBean();
         response.setData(joke);
 

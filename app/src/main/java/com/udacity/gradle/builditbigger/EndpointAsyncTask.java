@@ -3,7 +3,6 @@ package com.udacity.gradle.builditbigger;
 import android.os.AsyncTask;
 import android.support.annotation.VisibleForTesting;
 
-import com.example.Joke;
 import com.example.squirrel.myapplication.backend.myApi.MyApi;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
@@ -48,10 +47,8 @@ public class EndpointAsyncTask extends AsyncTask<Void, Void, String> {
             myApiService = builder.build();
         }
 
-        String joke = new Joke().getJoke();
-
         try {
-            return myApiService.sayJoke(joke).execute().getData();
+            return myApiService.sayJoke().execute().getData();
         } catch (IOException e) {
             mError = e;
             return e.getMessage();
